@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="tip_cal">
+        <h3 id="info">ITMD 541 - Lab 3 - Chaitanya Bejjanki</h3>
+        <h1 id="headline">Tip Calculator</h1>
+        <form id="form">
+            <label class="form-label">Bill Total:</label>
+            <input type="text" id="bill-total" class="form-input" placeholder="">
+            <label class="form-label">Choose Currency:</label>
+            <select id="currency" class="form-input">
+                <option value="USD $" data-rate="1">USD ($)</option>
+                <option value="INR ₹" data-rate="84.07">INR (₹)</option>
+                <option value="JPY ¥" data-rate="149.34">JPY (¥)</option>
+                <option value="GBP £" data-rate="0.82">GBP (£)</option> 
+                <!-- Add more currencies if needed -->
+            </select>
+            <label class="form-label">Tip:</label>
+            <input type="range" min="1" max="100" id="tip" class="form-input">
+            <label class="form-label">Tip Percentage:</label>
+            <input type="text" disabled id="tip-percentage" class="form-input">
+            <label class="form-label">Tip Amount:</label>
+            <input type="text" disabled id="tip-amount" class="form-input">
+            <label class="form-label">Total Bill With Tip:</label>
+            <input type="text" disabled id="total" class="form-input">
+        </form>
+    </div>
+    <script src="script.js"></script>
+    
+</body>
+</html>
