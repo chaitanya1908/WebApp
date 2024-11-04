@@ -1,51 +1,72 @@
-const bill_total = document.querySelector("#bill-total");
-const tip_slider = document.querySelector("#tip");
-const tip_percentage = document.querySelector("#tip-percentage");
-const tip_amount = document.querySelector("#tip-amount");
-const total_amount = document.querySelector("#total");
-const currency_select = document.querySelector("#currency");
+document.addEventListener('DOMContentLoaded', function () {
+    const billTotalInput = document.getElementById('billTotal');
+    const tipPercentageInput = document.getElementById('tipPercentage');
+    const tipAmountInput = document.getElementById('tipAmount');
+    const totalWithTipInput = document.getElementById('totalWithTip');
+    const tipPercentageDisplay = document.getElementById('tipPercentageDisplay');
+    const currencySelect = document.getElementById('currency');
+    const errorMessage = document.getElementById('error-message');
 
-// Event listeners for input changes
-bill_total.addEventListener("change", calculateTip);
-tip_slider.addEventListener("input", calculateTip);
-currency_select.addEventListener("change", calculateTip);
+    const conversionRates = {
+        usd: 1,
+        inr: 84.07,
+        yen: 149.34
+    };
 
-function calculateTip() {
-    // Validate the bill total input
-    if (isNaN(bill_total.value) || bill_total.value.trim() === "") {
-        alert("ENTER A VALID INPUT NUMBER");
-        bill_total.value = ""; // Optionally clear the invalid input
-        return;
+    function calculateTip() {
+        const billTotalValue = billTotalInput.value;
+        const billTotal = parseFloat(billTotalValue);
+        const tipPercentage = parseFloat(tipPercentageInput.value);
+        const selectedCurrency = currencySelect.value;
+        const conversionRate = conversionRates[selectedCurrency];
+
+        // Check for empty input
+        if (billTotalValue === '') {
+            errorMessage.textContent = '';
+            tipAmountInput.value = '';
+            totalWithTipInput.value = '';
+            return;
+        }
+
+        // Check if input is a valid number
+        if (isNaN(billTotal)) {
+            errorMessage.textContent = 'Please enter a number for the bill total.';
+            tipAmountInput.value = '';
+            totalWithTipInput.value = '';
+            return;
+        }
+
+        // Check for positive number
+        if (billTotal < 0) {
+            errorMessage.textContent = 'Please enter a valid positive number for the bill total.';
+            tipAmountInput.value = '';
+            totalWithTipInput.value = '';
+            return;
+        } else {
+            errorMessage.textContent = '';
+        }
+
+        const tipAmount = (billTotal * (tipPercentage / 100)) * conversionRate;
+        const totalWithTip = (billTotal * conversionRate) + tipAmount;
+
+        tipAmountInput.value = `${(tipAmount).toFixed(2)} ${getCurrencySymbol(selectedCurrency)}`;
+        totalWithTipInput.value = `${(totalWithTip).toFixed(2)} ${getCurrencySymbol(selectedCurrency)}`;
     }
 
-    // Check if the bill total is a negative number or zero
-    if (parseFloat(bill_total.value) <= 0) {
-        alert("Bill total must be a positive number.");
-        bill_total.value = ""; // Optionally clear the invalid input
-        return;
+    function getCurrencySymbol(currency) {
+        const symbols = {
+            'usd': '$',
+            'inr': '₹',
+            'yen': '¥'
+        };
+        return symbols[currency] || '$';
     }
 
-    // Parse and format the bill total value
-    let bill = parseFloat(bill_total.value);
-    bill_total.value = bill.toFixed(2);
+    tipPercentageInput.addEventListener('input', function () {
+        tipPercentageDisplay.value = `${tipPercentageInput.value}%`;
+        calculateTip();
+    });
 
-    // Get the tip percentage from the slider
-    let tip = parseFloat(tip_slider.value);
-    tip_percentage.value = `${tip}%`;
-
-    // Calculate the tip amount in the original currency
-    let total_tip = parseFloat(((tip * bill) / 100).toFixed(2));
-
-    // Get the selected currency and its exchange rate
-    const selectedCurrency = currency_select.options[currency_select.selectedIndex];
-    const conversionRate = parseFloat(selectedCurrency.getAttribute("data-rate"));
-    const currencySymbol = selectedCurrency.value.split(" ")[1];
-
-    // Calculate the converted tip and total amounts
-    let converted_tip = (total_tip * conversionRate).toFixed(2);
-    let converted_total = ((bill + total_tip) * conversionRate).toFixed(2);
-
-    // Display the converted amounts with the appropriate currency symbol
-    tip_amount.value = `${currencySymbol} ${converted_tip}`;
-    total_amount.value = `${currencySymbol} ${converted_total}`;
-}
+    billTotalInput.addEventListener('input', calculateTip);
+    currencySelect.addEventListener('change', calculateTip);
+});
